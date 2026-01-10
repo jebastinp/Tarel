@@ -25,7 +25,7 @@ class Settings(BaseModel):
     ]
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        "postgresql+psycopg2://postgres:882010@localhost:5432/Tarel",
+        "postgresql://postgres:882010@localhost:5432/Tarel",
     )
     JWT_SECRET: str = os.getenv("JWT_SECRET", "devsecret")
     JWT_ALG: str = "HS256"

@@ -1,7 +1,7 @@
 fastapi==0.114.2
 uvicorn[standard]==0.30.6
 SQLAlchemy==2.0.32
-psycopg2-binary==2.9.9
+psycopg[binary]==3.1.18
 python-jose==3.3.0
 passlib[bcrypt]==1.7.4
 pydantic==2.9.2
