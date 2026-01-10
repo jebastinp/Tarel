@@ -4,15 +4,15 @@ import Breadcrumbs from '@/components/Breadcrumbs'
 import { LEGAL_PAGES, getLegalPage } from '@/lib/legalContent'
 
 type LegalPageProps = {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }
 
 export function generateStaticParams() {
   return LEGAL_PAGES.map((page) => ({ slug: page.slug }))
 }
 
-export async function generateMetadata({ params }: LegalPageProps) {
-  const { slug } = await params
+export function generateMetadata({ params }: LegalPageProps) {
+  const { slug } = params
   const page = getLegalPage(slug)
 
   if (!page) {
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: LegalPageProps) {
   }
 }
 
-export default async function LegalDetailPage({ params }: LegalPageProps) {
-  const { slug } = await params
+export default function LegalDetailPage({ params }: LegalPageProps) {
+  const { slug } = params
   const page = getLegalPage(slug)
 
   if (!page) {
