@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 
 import { useCart } from '@/providers/CartProvider'
 import { buildApiUrl } from '@/lib/api'
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const slug = params.id
+export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: slug } = use(params)
   const [product, setProduct] = useState<any>(null)
   const { add } = useCart()
 
