@@ -1,0 +1,6 @@
+<svg width="120" height="32" viewBox="0 0 120 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="32" rx="16" fill="#2f4135"/>
+  <path d="M24 16c4.418 0 8-3.582 8-8v16c0-4.418-3.582-8-8-8Z" fill="#708e53"/>
+  <path d="M12 10c2.761 0 5 2.239 5 5s-2.239 5-5 5-5-2.239-5-5 2.239-5 5-5Z" fill="#e9e2d5"/>
+  <text x="40" y="21" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="14" fill="#e9e2d5">Tarel</text>
+</svg>
