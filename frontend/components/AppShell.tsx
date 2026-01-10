@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import type { ReactNode } from 'react'
 
 import Footer from '@/components/Footer'
@@ -54,7 +54,9 @@ const ACCOUNT_NAV: AccountNavItem[] = [
 function PublicScaffold({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
+      <Suspense fallback={<div className="h-24 bg-brand-beige/50" />}>
+        <Navbar />
+      </Suspense>
       <main className="mx-auto w-full max-w-6xl flex-1 p-4">{children}</main>
       <Footer />
     </div>
