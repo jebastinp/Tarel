@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 import Logo from '@/images/logo.png'
-import { buildServiceUrl } from '@/lib/api'
+import { buildApiUrl } from '@/lib/api'
 
 type AuthFormValues = {
   name?: string
@@ -93,7 +93,7 @@ export default function AuthHero({ mode = 'login', onSubmit }: Props) {
 
     const timeoutId = window.setTimeout(async () => {
       try {
-        const url = new URL(buildServiceUrl('/autocomplete'))
+        const url = new URL(buildApiUrl('/site/address/autocomplete'))
         url.searchParams.set('term', term)
         url.searchParams.set('top', '6')
 
@@ -129,7 +129,7 @@ export default function AuthHero({ mode = 'login', onSubmit }: Props) {
     setAddressError(null)
 
     try {
-      const url = new URL(buildServiceUrl('/getaddress'))
+      const url = new URL(buildApiUrl('/site/address/getaddress'))
       url.searchParams.set('id', suggestion.id)
 
       const response = await fetch(url.toString())
@@ -152,35 +152,35 @@ export default function AuthHero({ mode = 'login', onSubmit }: Props) {
   }
 
   return (
-    <div className="relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden rounded-[36px] bg-gradient-to-br from-brand-dark via-brand-dark/90 to-brand-olive/40 shadow-2xl text-white md:flex-row">
-      <div className="relative flex flex-1 flex-col items-center gap-6 p-10 md:max-w-sm text-center md:items-start md:text-left">
-        <div className="inline-flex items-center justify-center rounded-3xl bg-white px-8 py-5 shadow-xl">
-          <Image src={Logo} alt="Tarel" width={260} height={86} className="h-20 w-auto object-contain" priority />
+    <div className="relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden rounded-none sm:rounded-[36px] bg-gradient-to-br from-brand-dark via-brand-dark/90 to-brand-olive/40 shadow-2xl text-white md:flex-row min-h-[100dvh] sm:min-h-0">
+      <div className="relative flex flex-1 flex-col items-center gap-4 sm:gap-6 p-6 sm:p-10 md:max-w-sm text-center md:items-start md:text-left">
+        <div className="inline-flex items-center justify-center rounded-2xl sm:rounded-3xl bg-white px-6 sm:px-8 py-4 sm:py-5 shadow-xl">
+          <Image src={Logo} alt="Tarel" width={260} height={86} className="h-16 sm:h-20 w-auto object-contain" priority />
         </div>
-        <div className="space-y-3 md:max-w-xs">
-          <div className="flex items-center justify-center gap-3 md:justify-start">
-            <Image src={Logo} alt="Tarel" width={100} height={32} className="h-6 w-auto object-contain" />
-            <p className="text-xs uppercase tracking-[0.4em] text-brand-beige/70">Welcome to Tarel</p>
+        <div className="space-y-2 sm:space-y-3 md:max-w-xs">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 md:justify-start">
+            <Image src={Logo} alt="Tarel" width={100} height={32} className="h-5 sm:h-6 w-auto object-contain" />
+            <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-brand-beige/70">Welcome to Tarel</p>
           </div>
-          <h1 className="text-4xl font-bold">{isSignup ? 'Create account' : 'Sign back in'}</h1>
-          <p className="text-sm text-white/80">
+          <h1 className="text-2xl sm:text-4xl font-bold">{isSignup ? 'Create account' : 'Sign back in'}</h1>
+          <p className="text-xs sm:text-sm text-white/80">
             Premium access to Edinburgh&apos;s freshest catch. Track orders, save favourites, and manage
             delivery slots effortlessly.
           </p>
         </div>
-        <div className="mt-auto space-y-2 text-sm text-white/70">
+        <div className="hidden md:block mt-auto space-y-2 text-sm text-white/70">
           <p>Need help? Email hello@tarel.co.uk</p>
           <p>Secure checkout powered by Stripe (test mode)</p>
         </div>
       </div>
 
-      <div className="relative flex flex-1 items-center justify-center bg-white p-10">
-        <div className="w-full max-w-md rounded-3xl border border-brand-dark/10 bg-white p-8 shadow-2xl">
-          <div className="flex gap-3 rounded-full bg-brand-beige/50 p-1 text-sm font-semibold text-brand-dark">
+      <div className="relative flex flex-1 items-center justify-center bg-white p-6 sm:p-10">
+        <div className="w-full max-w-md rounded-2xl sm:rounded-3xl border border-brand-dark/10 bg-white p-6 sm:p-8 shadow-2xl">
+          <div className="flex gap-2 sm:gap-3 rounded-full bg-brand-beige/50 p-1 text-xs sm:text-sm font-semibold text-brand-dark">
             <button
               type="button"
               onClick={() => setActiveTab('login')}
-              className={`flex-1 rounded-full px-4 py-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark ${
+              className={`flex-1 rounded-full px-3 sm:px-4 py-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark ${
                 !isSignup ? 'bg-brand-dark text-white shadow-md' : 'text-brand-dark/60 hover:text-brand-dark'
               }`}
             >
@@ -189,7 +189,7 @@ export default function AuthHero({ mode = 'login', onSubmit }: Props) {
             <button
               type="button"
               onClick={() => setActiveTab('signup')}
-              className={`flex-1 rounded-full px-4 py-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark ${
+              className={`flex-1 rounded-full px-3 sm:px-4 py-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark ${
                 isSignup ? 'bg-brand-dark text-white shadow-md' : 'text-brand-dark/60 hover:text-brand-dark'
               }`}
             >
