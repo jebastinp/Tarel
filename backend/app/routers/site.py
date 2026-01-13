@@ -42,7 +42,11 @@ async def address_autocomplete(
         raise HTTPException(status_code=502, detail="Address service is unavailable.")
     
     if response.status_code >= 400:
-        raise HTTPException(status_code=response.status_code, detail="Address lookup failed.")
+        try:
+            error_detail = response.json()
+        except:
+            error_detail = response.text or "Address lookup failed."
+        raise HTTPException(status_code=response.status_code, detail=error_detail)
     
     try:
         return response.json()
@@ -71,7 +75,11 @@ async def address_get(
         raise HTTPException(status_code=502, detail="Address service is unavailable.")
     
     if response.status_code >= 400:
-        raise HTTPException(status_code=response.status_code, detail="Address lookup failed.")
+        try:
+            error_detail = response.json()
+        except:
+            error_detail = response.text or "Address detail lookup failed."
+        raise HTTPException(status_code=response.status_code, detail=error_detail)
     
     try:
         return response.json()
