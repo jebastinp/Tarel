@@ -89,7 +89,7 @@ export default function Navbar() {
                 width={220}
                 height={72}
                 priority
-                className="h-16 w-auto object-contain"
+                className="h-12 sm:h-16 w-auto object-contain"
               />
             </Link>
             <div className="hidden md:inline-flex items-center gap-3 rounded-full bg-white px-4 py-2 shadow-inner text-sm text-brand-dark/80">
@@ -115,6 +115,97 @@ export default function Navbar() {
               <span className="text-xs uppercase tracking-widest text-brand-dark/60">DELIVERING TO</span>
               <span className="text-sm font-semibold text-brand-dark">Scotland</span>
             </div>
+          </div>
+
+          {/* Mobile Login & Cart Buttons */}
+          <div className="flex md:hidden items-center gap-2">
+            {loading && (
+              <div className="h-9 w-9 animate-pulse rounded-full bg-brand-dark/10" aria-hidden />
+            )}
+
+            {!user && !loading && (
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center rounded-full border border-brand-dark/20 px-3 py-2 text-xs font-medium text-brand-dark transition hover:border-brand-dark hover:bg-brand-dark hover:text-white"
+              >
+                Login
+              </Link>
+            )}
+
+            {user && (
+              <div className="relative" ref={menuRef}>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((open) => !open)}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-dark/20 bg-white text-xs font-semibold uppercase text-brand-dark shadow-sm transition hover:border-brand-dark/40"
+                  aria-label="Account menu"
+                >
+                  {userInitials}
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-0 z-20 mt-3 w-56 rounded-2xl border border-brand-dark/10 bg-white p-3 text-sm shadow-xl">
+                    <div className="rounded-xl bg-brand-beige/30 p-3 text-xs text-brand-dark/70">
+                      <p className="font-semibold text-brand-dark">{user.name}</p>
+                      <p className="mt-1 truncate text-brand-dark/60">{user.email}</p>
+                    </div>
+                    <div className="mt-3 space-y-1 text-brand-dark/80">
+                      <Link
+                        href="/user/profile"
+                        className="flex items-center justify-between rounded-xl px-3 py-2 transition hover:bg-brand-beige/40"
+                        onClick={closeMenu}
+                      >
+                        <span>My profile</span>
+                        <span className="text-xs text-brand-dark/50">↗</span>
+                      </Link>
+                      <Link
+                        href="/user/orders"
+                        className="flex items-center justify-between rounded-xl px-3 py-2 transition hover:bg-brand-beige/40"
+                        onClick={closeMenu}
+                      >
+                        <span>Orders</span>
+                        <span className="text-xs text-brand-dark/50">↗</span>
+                      </Link>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        closeMenu()
+                        logout()
+                      }}
+                      className="mt-3 w-full rounded-xl border border-brand-dark/20 px-3 py-2 text-sm font-semibold text-brand-dark transition hover:border-brand-dark hover:bg-brand-dark hover:text-white"
+                    >
+                      Log out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <Link
+              href="/cart"
+              className="inline-flex items-center gap-1.5 rounded-full bg-brand-dark px-3 py-2 text-xs font-semibold text-white shadow-lg transition hover:opacity-90"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                className="h-4 w-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 3h2l2.4 12.3a1 1 0 0 0 .98.8h8.24a1 1 0 0 0 .97-.76l1.1-4.4M7 6h13l-1.34 5.36a1 1 0 0 1-.97.76H9.76"
+                />
+                <path d="M10 20a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
+              </svg>
+              {count > 0 && (
+                <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-white px-1 text-xs font-semibold text-brand-dark">
+                  {count}
+                </span>
+              )}
+            </Link>
           </div>
 
           <div className="hidden md:flex flex-1 items-center gap-3 md:max-w-md">
@@ -153,13 +244,13 @@ export default function Navbar() {
             </form>
 
             {loading && (
-              <div className="hidden h-11 w-11 animate-pulse rounded-full bg-brand-dark/10 md:inline-flex" aria-hidden />
+              <div className="h-11 w-11 animate-pulse rounded-full bg-brand-dark/10" aria-hidden />
             )}
 
             {!user && !loading && (
               <Link
                 href="/login"
-                className="hidden md:inline-flex items-center justify-center rounded-full border border-brand-dark/20 px-4 py-2 text-sm font-medium text-brand-dark transition hover:border-brand-dark hover:bg-brand-dark hover:text-white"
+                className="inline-flex items-center justify-center rounded-full border border-brand-dark/20 px-4 py-2 text-sm font-medium text-brand-dark transition hover:border-brand-dark hover:bg-brand-dark hover:text-white"
               >
                 Login / Sign Up
               </Link>
@@ -212,15 +303,6 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-            )}
-
-            {!user && !loading && (
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center rounded-full border border-brand-dark/20 px-4 py-2 text-sm font-medium text-brand-dark transition hover:border-brand-dark hover:bg-brand-dark hover:text-white md:hidden"
-              >
-                Login
-              </Link>
             )}
 
             <Link
