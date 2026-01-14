@@ -342,7 +342,26 @@ export default function AuthHero({ mode = 'login', onSubmit }: Props) {
               </Link>
               .
             </p>
-            {message && <p className="text-center text-xs text-red-600">{message}</p>}
+            {message && (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-center">
+                <div className="flex items-start gap-3">
+                  <svg
+                    className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="flex-1 text-left text-sm font-medium text-red-800">{message}</p>
+                </div>
+              </div>
+            )}
           </form>
         </div>
       </div>

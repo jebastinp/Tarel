@@ -8,6 +8,7 @@ import useSWR from 'swr'
 import { NextDeliveryCard } from '@/components/NextDeliveryCard'
 import { buildApiUrl } from '@/lib/api'
 import type { Category, NextDeliveryInfo, Product } from '@/lib/types'
+import { useAuth } from '@/providers/AuthProvider'
 import logoImage from '@/images/logo.png'
 
 const fetcher = (path: string) => fetch(buildApiUrl(path)).then((res) => res.json())
@@ -28,6 +29,8 @@ const CATEGORY_COPY: Record<string, { title: string; description: string }> = {
 }
 
 export default function Home() {
+  const { user } = useAuth()
+  
   const {
     data: products,
     isLoading: loadingProducts,
@@ -160,12 +163,14 @@ export default function Home() {
               >
                 Browse the menu
               </Link>
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center rounded-full border border-brand-dark/30 px-7 py-3 text-sm font-semibold text-brand-dark transition hover:border-brand-dark hover:bg-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark"
-              >
-                Log in / Sign up
-              </Link>
+              {!user && (
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center rounded-full border border-brand-dark/30 px-7 py-3 text-sm font-semibold text-brand-dark transition hover:border-brand-dark hover:bg-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark"
+                >
+                  Log in / Sign up
+                </Link>
+              )}
             </div>
           </header>
 

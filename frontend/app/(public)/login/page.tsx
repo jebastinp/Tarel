@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation'
 
 import AuthHero from '@/components/AuthHero'
 import { buildApiUrl } from '@/lib/api'
+import { parseErrorMessage } from '@/lib/errors'
 import { useAuth } from '@/providers/AuthProvider'
+import { useToast } from '@/providers/ToastProvider'
 
 type AuthFormValues = {
   name?: string
@@ -22,6 +24,7 @@ type AuthFormValues = {
 export default function AuthPage() {
   const router = useRouter()
   const { setSession } = useAuth()
+  const { showSuccess } = useToast()
 
   const handleAuth = async ({ name, phone, email, password, address }: AuthFormValues) => {
     const isSignup = Boolean(name)
@@ -45,16 +48,20 @@ export default function AuthPage() {
     })
 
     if (!res.ok) {
-      throw new Error(await res.text())
+      const errorText = await res.text()
+      const errorMessage = parseErrorMessage(errorText)
+      throw new Error(errorMessage)
     }
 
     const data = await res.json()
     if (isSignup) {
+      showSuccess('Account created successfully! Please login.')
       router.push('/login')
       return
     }
 
     setSession(data.access_token, data.user)
+    showSuccess('Login successful! Welcome back.')
     router.push('/user/profile')
   }
 

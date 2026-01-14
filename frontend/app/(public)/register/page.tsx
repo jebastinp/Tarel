@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 
 import AuthHero from '@/components/AuthHero'
 import { buildApiUrl } from '@/lib/api'
+import { parseErrorMessage } from '@/lib/errors'
+import { useToast } from '@/providers/ToastProvider'
 
 type AuthFormValues = {
   name?: string
@@ -20,6 +22,7 @@ type AuthFormValues = {
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { showSuccess } = useToast()
 
   const handleAuth = async ({ name, phone, email, password, address }: AuthFormValues) => {
     if (!name || !phone || !address) {
@@ -42,9 +45,12 @@ export default function RegisterPage() {
     })
 
     if (!res.ok) {
-      throw new Error(await res.text())
+      const errorText = await res.text()
+      const errorMessage = parseErrorMessage(errorText)
+      throw new Error(errorMessage)
     }
 
+    showSuccess('Account created successfully! Please login.')
     router.push('/login')
   }
 
