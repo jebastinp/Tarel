@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 
 import { useCart } from '@/providers/CartProvider'
+import { buildMediaUrl } from '@/lib/api'
 
 const currency = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' })
 const SHIPPING_THRESHOLD = 50
@@ -72,7 +73,7 @@ export default function CartPage() {
                   <div className="h-28 w-full overflow-hidden rounded-2xl bg-brand-beige/60 sm:h-32 sm:w-32">
                     {line.product.image_url ? (
                       <img
-                        src={line.product.image_url}
+                        src={buildMediaUrl(line.product.image_url)}
                         alt={line.product.name}
                         className="h-full w-full object-cover"
                         loading="lazy"

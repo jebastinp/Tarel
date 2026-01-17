@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 
 import { useCart } from '@/providers/CartProvider'
 import type { Product } from '@/lib/types'
+import { buildMediaUrl } from '@/lib/api'
 import AddToCartModal from './AddToCartModal'
 import type { CartItemWithOptions } from './AddToCartModal'
 
@@ -31,7 +32,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-brand-dark/10 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-2xl">
         <div className="relative">
         <img
-          src={product.image_url || 'https://placehold.co/600x420?text=Tarel'}
+          src={buildMediaUrl(product.image_url)}
           alt={product.name}
           className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
         />

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { useCart } from '@/providers/CartProvider'
-import { buildApiUrl } from '@/lib/api'
+import { buildApiUrl, buildMediaUrl } from '@/lib/api'
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const slug = params.id
@@ -20,7 +20,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (!product) return <div>Loading...</div>
   return (
     <div className="grid md:grid-cols-2 gap-6">
-      <img src={product.image_url || 'https://placehold.co/600x400'} className="rounded-2xl" alt={product.name} />
+      <img src={buildMediaUrl(product.image_url)} className="rounded-2xl" alt={product.name} />
       <div className="space-y-3 card">
         <h1 className="text-2xl font-bold">{product.name}</h1>
         <p className="text-gray-600">{product.description || '—'}</p>

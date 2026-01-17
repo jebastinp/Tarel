@@ -19,6 +19,21 @@ export function buildServiceUrl(path: string) {
   return `${API_ORIGIN}${normalisedPath}`
 }
 
+export function buildMediaUrl(imagePath: string | null | undefined): string {
+  if (!imagePath) {
+    return 'https://placehold.co/600x420?text=Tarel'
+  }
+  
+  // If already absolute URL, return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath
+  }
+  
+  // Convert relative path to absolute URL using backend origin
+  const normalisedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`
+  return `${API_ORIGIN}${normalisedPath}`
+}
+
 export async function api(path: string, opts: RequestInit = {}) {
   const target = buildApiUrl(path)
   const res = await fetch(target, {
