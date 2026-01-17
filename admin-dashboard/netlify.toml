@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[plugins]]
+  package = "@netlify/plugin-vite"
+
+[build.environment]
+  VITE_API_BASE = "https://tarel-backend.onrender.com/api"
+
+# SPA redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
