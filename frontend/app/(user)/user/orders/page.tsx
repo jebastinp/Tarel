@@ -6,8 +6,6 @@ import { buildApiUrl } from '@/lib/api'
 import type { Order } from '@/lib/types'
 import { useAuth } from '@/providers/AuthProvider'
 
-const cancellableStatuses = new Set(['pending', 'paid', 'processing'])
-
 const formatStatus = (status: string) =>
   status
     .replace(/_/g, ' ')
@@ -19,7 +17,6 @@ export default function MyOrders() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [banner, setBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
-  const [cancellingId, setCancellingId] = useState<string | null>(null)
 
   useEffect(() => {
     if (authLoading) {
@@ -85,47 +82,6 @@ export default function MyOrders() {
 
   const formatCurrency = (value: number) => `£${value.toFixed(2)}`
 
-  const handleCancel = useCallback(
-    async (orderId: string) => {
-      try {
-        setBanner(null)
-        setCancellingId(orderId)
-
-        const { getToken } = await import('@/lib/auth')
-        const token = getToken()
-
-        if (!token) {
-          throw new Error('Please log in to manage your orders.')
-        }
-
-        const res = await fetch(buildApiUrl(`/orders/${orderId}/cancel`), {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (!res.ok) {
-          const detail = await res.text()
-          throw new Error(detail || 'Unable to cancel this order right now.')
-        }
-
-        const updated: Order = await res.json()
-        setOrders((prev) => prev.map((order) => (order.id === orderId ? updated : order)))
-        setBanner({ type: 'success', message: 'Order cancelled successfully.' })
-      } catch (err) {
-        console.error('Failed to cancel order', err)
-        setBanner({
-          type: 'error',
-          message: err instanceof Error ? err.message : 'Failed to cancel the order. Please try again.',
-        })
-      } finally {
-        setCancellingId(null)
-      }
-    },
-    [],
-  )
-
   return (
     <div className="space-y-6">
   <div className="rounded-3xl bg-gradient-to-r from-brand-dark to-brand-olive/80 p-5 text-white shadow-lg sm:p-6">
@@ -171,8 +127,6 @@ export default function MyOrders() {
         <div className="space-y-4">
           {orders.map((order: Order) => {
             const statusLabel = formatStatus(order.status)
-            const canCancel = cancellableStatuses.has(order.status)
-            const isCancelling = cancellingId === order.id
 
             return (
               <article key={order.id} className="rounded-3xl border border-brand-dark/10 bg-white p-4 shadow-sm sm:p-6">
@@ -185,16 +139,6 @@ export default function MyOrders() {
                     <span className="rounded-full bg-brand-dark px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white">
                       {statusLabel}
                     </span>
-                    {canCancel && (
-                      <button
-                        type="button"
-                        onClick={() => handleCancel(order.id)}
-                        disabled={isCancelling}
-                        className="inline-flex items-center gap-2 rounded-full border border-brand-dark/20 px-3 py-1 text-xs font-semibold text-brand-dark transition hover:border-brand-dark hover:bg-brand-dark hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {isCancelling ? 'Cancelling…' : 'Cancel order'}
-                      </button>
-                    )}
                   </div>
                 </header>
 

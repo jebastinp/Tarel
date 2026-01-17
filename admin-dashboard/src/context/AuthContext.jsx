@@ -13,40 +13,6 @@ const AuthContext = createContext({
 })
 
 const ADMIN_ROLE = 'admin'
-const FALLBACK_EMAIL = 'admin@tarel.local'
-const FALLBACK_PASSWORD = 'admin123'
-const AUTO_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL ?? FALLBACK_EMAIL).trim() || FALLBACK_EMAIL
-const AUTO_PASSWORD = (import.meta.env.VITE_ADMIN_PASSWORD ?? FALLBACK_PASSWORD) || FALLBACK_PASSWORD
-const AUTO_SIGN_IN_ENABLED = AUTO_EMAIL !== '' && AUTO_PASSWORD !== ''
-const SKIP_AUTO_KEY = 'tarel_admin_skip_auto'
-
-function getWindow() {
-  return typeof window === 'undefined' ? null : window
-}
-
-function shouldSkipAutoSignIn() {
-  const win = getWindow()
-  if (!win) return false
-  try {
-    return win.sessionStorage.getItem(SKIP_AUTO_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-function setSkipAutoSignIn(value) {
-  const win = getWindow()
-  if (!win) return
-  try {
-    if (value) {
-      win.sessionStorage.setItem(SKIP_AUTO_KEY, '1')
-    } else {
-      win.sessionStorage.removeItem(SKIP_AUTO_KEY)
-    }
-  } catch (err) {
-    console.error('Failed to update skip-auto flag', err)
-  }
-}
 
 function isExpired(token) {
   const payload = decodeJwt(token)
@@ -62,7 +28,6 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState('')
 
   const signOut = () => {
-    setSkipAutoSignIn(true)
     clearSession()
     setToken(null)
     setUser(null)
@@ -89,7 +54,6 @@ export function AuthProvider({ children }) {
         }
 
     persistSession(response.access_token, response.user)
-    setSkipAutoSignIn(false)
         setToken(response.access_token)
         setUser(response.user)
         return response
@@ -112,43 +76,13 @@ export function AuthProvider({ children }) {
         if (!cancelled) {
           setToken(storedToken)
           setUser(storedUser)
-          setLoading(false)
         }
-        return
-      }
-
-      clearSession()
-
-      if (shouldSkipAutoSignIn()) {
-        if (!cancelled) {
-          setLoading(false)
-        }
-        return
-      }
-
-      if (!AUTO_SIGN_IN_ENABLED) {
-        if (!cancelled) {
-          setLoading(false)
-        }
-        return
+      } else {
+        clearSession()
       }
 
       if (!cancelled) {
-        setLoading(true)
-        setError('')
-      }
-
-      try {
-        await signIn({ email: AUTO_EMAIL, password: AUTO_PASSWORD })
-      } catch (err) {
-        if (!cancelled) {
-          console.error('Automatic admin sign-in failed', err)
-          setError('Automatic admin sign-in failed. Check VITE_ADMIN_EMAIL and VITE_ADMIN_PASSWORD.')
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
+        setLoading(false)
       }
     }
 

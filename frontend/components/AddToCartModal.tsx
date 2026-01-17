@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { Product } from '@/lib/types'
+import { useToast } from '@/providers/ToastProvider'
 
 export type CutCleanOption = 
   | 'no_cut_clean'
@@ -42,6 +43,7 @@ export default function AddToCartModal({
   onClose,
   onAddToCart,
 }: AddToCartModalProps) {
+  const { showSuccess } = useToast()
   const [quantity, setQuantity] = useState<number>(1)
   const [cutCleanOption, setCutCleanOption] = useState<CutCleanOption>('no_cut_clean')
   const [customNote, setCustomNote] = useState<string>('')
@@ -81,6 +83,7 @@ export default function AddToCartModal({
       custom_note: customNote.trim(),
     }
     onAddToCart(product, options)
+    showSuccess(`Added to cart: ${product.name} (${quantity} kg)`)
     onClose()
   }
 
