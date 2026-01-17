@@ -46,7 +46,7 @@ export default function Toast({ message, type = 'success', duration = 3000, onCl
 
   return (
     <div
-      className={`${bgColor} pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl px-4 py-3 text-white shadow-2xl transition-all animate-in slide-in-from-top-5 sm:rounded-3xl sm:px-6 sm:py-4`}
+      className={`${bgColor} pointer-events-auto flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-white shadow-2xl transition-all animate-in slide-in-from-top-5 sm:rounded-3xl sm:px-6 sm:py-4`}
       role="alert"
     >
       <div className="flex-shrink-0">{icon}</div>
