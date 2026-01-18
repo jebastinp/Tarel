@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Package, Scale, ShoppingCart, Calendar } from 'lucide-react'
-import api from '../lib/api'
+import { api } from '../lib/api'
+import { useAuth } from '../context/AuthContext'
 
 function VendorReport() {
+  const { token } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [deliveryDate, setDeliveryDate] = useState('')
@@ -21,11 +23,11 @@ function VendorReport() {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.get(`/admin/vendor-report?delivery_date=${date}`)
-      setReportData(response.data)
+      const data = await api(`/admin/vendor-report?delivery_date=${date}`, { token })
+      setReportData(data)
     } catch (err) {
       console.error('Failed to fetch vendor report:', err)
-      setError(err.response?.data?.detail || 'Failed to load vendor report')
+      setError(err.message || 'Failed to load vendor report')
     } finally {
       setLoading(false)
     }
