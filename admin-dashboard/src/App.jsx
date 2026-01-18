@@ -10,6 +10,7 @@ import Customers from './pages/Customers'
 import Reports from './pages/Reports'
 import Categories from './pages/Categories'
 import Purchase from './pages/Purchase'
+import VendorReport from './pages/VendorReport'
 
 export default function App() {
   return (
@@ -64,6 +65,14 @@ export default function App() {
           element={
             <AdminLayout>
               <Purchase />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/vendor-report"
+          element={
+            <AdminLayout>
+              <VendorReport />
             </AdminLayout>
           }
         />

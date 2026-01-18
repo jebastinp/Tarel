@@ -367,3 +367,22 @@ class NextDeliveryResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Vendor Report Schemas
+class VendorReportProductItem(BaseModel):
+    product_name: str
+    total_qty_kg: float
+
+class VendorReportInstruction(BaseModel):
+    order_id: UUID
+    customer_name: str
+    notes: str
+
+class VendorReportOut(BaseModel):
+    delivery_date: date
+    total_orders: int
+    total_kg: float
+    total_items: int
+    products: List[VendorReportProductItem]
+    instructions: List[VendorReportInstruction]

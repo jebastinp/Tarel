@@ -35,6 +35,9 @@ from ..schemas import (
     ProductAdminUpdate,
     SalesReportRequest,
     SupportMessageAdminUpdate,
+    VendorReportOut,
+    VendorReportProductItem,
+    VendorReportInstruction,
 )
 from ..config import settings
 from ..site_settings import get_next_delivery, set_next_delivery
@@ -666,4 +669,98 @@ def send_sales_report(
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
         detail="Sales report email automation is not configured for the local Postgres deployment.",
+    )
+
+
+@router.get("/vendor-report", response_model=VendorReportOut)
+def get_vendor_report(
+    delivery_date: str = Query(..., description="Delivery date in YYYY-MM-DD format"),
+    db: Session = Depends(get_db),
+    admin=Depends(require_admin),
+):
+    """
+    Get vendor order report aggregated by delivery date.
+    
+    Returns:
+    - Total number of orders
+    - Total weight in kg
+    - Total items count
+    - Product breakdown (product name + total qty)
+    - All customer instructions/notes
+    """
+    del admin
+    
+    from datetime import datetime as dt
+    
+    # Parse delivery date
+    try:
+        target_date = dt.strptime(delivery_date, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+    
+    # Get all orders for the delivery date
+    # Note: Orders table has delivery_slot field which contains date/time info
+    # We'll filter orders where delivery_slot contains the date
+    orders = (
+        db.query(Order)
+        .filter(Order.delivery_slot.contains(delivery_date))
+        .options(selectinload(Order.items).selectinload(OrderItem.product))
+        .options(selectinload(Order.user))
+        .all()
+    )
+    
+    if not orders:
+        # Return empty report
+        return VendorReportOut(
+            delivery_date=target_date,
+            total_orders=0,
+            total_kg=0.0,
+            total_items=0,
+            products=[],
+            instructions=[]
+        )
+    
+    # Aggregate data
+    total_orders = len(orders)
+    total_kg = 0.0
+    total_items = 0
+    product_totals = {}  # {product_name: total_qty_kg}
+    instructions = []
+    
+    for order in orders:
+        for item in order.items:
+            total_kg += item.qty_kg
+            total_items += 1
+            
+            # Aggregate by product name
+            product_name = item.product.name if item.product else "Unknown Product"
+            if product_name in product_totals:
+                product_totals[product_name] += item.qty_kg
+            else:
+                product_totals[product_name] = item.qty_kg
+        
+        # Collect instructions (delivery_slot acts as notes field for now)
+        # Add any order-level notes
+        if order.delivery_slot:
+            instructions.append(
+                VendorReportInstruction(
+                    order_id=order.id,
+                    customer_name=order.user.name if order.user else "Unknown",
+                    notes=order.delivery_slot
+                )
+            )
+    
+    # Convert product_totals to list
+    products = [
+        VendorReportProductItem(product_name=name, total_qty_kg=round(qty, 3))
+        for name, qty in sorted(product_totals.items(), key=lambda x: x[1], reverse=True)
+    ]
+    
+    return VendorReportOut(
+        delivery_date=target_date,
+        total_orders=total_orders,
+        total_kg=round(total_kg, 3),
+        total_items=total_items,
+        products=products,
+        instructions=instructions
     )

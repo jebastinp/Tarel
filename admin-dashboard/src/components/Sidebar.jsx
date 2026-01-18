@@ -1,4 +1,4 @@
-import { BarChart3, ClipboardList, LayoutGrid, Package, ShoppingCart, Tags, UsersRound, X } from 'lucide-react'
+import { BarChart3, ClipboardList, LayoutGrid, Package, ShoppingCart, Tags, UsersRound, X, FileText } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const links = [
@@ -8,6 +8,7 @@ const links = [
   { to: '/admin/categories', label: 'Category Management', icon: Tags },
   { to: '/admin/customers', label: 'Customers', icon: UsersRound },
   { to: '/admin/purchase', label: 'Purchase', icon: ShoppingCart },
+  { to: '/admin/vendor-report', label: 'Vendor Report', icon: FileText },
   { to: '/admin/reports', label: 'Reports', icon: BarChart3 }
 ]
 

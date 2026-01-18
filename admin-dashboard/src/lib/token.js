@@ -26,8 +26,8 @@ export function loadSession() {
   const win = safeWindow()
   if (!win) return { token: null, user: null }
   try {
-    const token = win.localStorage.getItem(TOKEN_KEY)
-    const userRaw = win.localStorage.getItem(USER_KEY)
+    const token = win.sessionStorage.getItem(TOKEN_KEY)
+    const userRaw = win.sessionStorage.getItem(USER_KEY)
     const user = userRaw ? JSON.parse(userRaw) : null
     return { token, user }
   } catch {
@@ -39,8 +39,8 @@ export function persistSession(token, user) {
   const win = safeWindow()
   if (!win) return
   try {
-    win.localStorage.setItem(TOKEN_KEY, token)
-    win.localStorage.setItem(USER_KEY, JSON.stringify(user))
+    win.sessionStorage.setItem(TOKEN_KEY, token)
+    win.sessionStorage.setItem(USER_KEY, JSON.stringify(user))
   } catch (err) {
     console.error('Failed to persist admin session', err)
   }
@@ -49,6 +49,6 @@ export function persistSession(token, user) {
 export function clearSession() {
   const win = safeWindow()
   if (!win) return
-  win.localStorage.removeItem(TOKEN_KEY)
-  win.localStorage.removeItem(USER_KEY)
+  win.sessionStorage.removeItem(TOKEN_KEY)
+  win.sessionStorage.removeItem(USER_KEY)
 }
