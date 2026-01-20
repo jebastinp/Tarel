@@ -16,7 +16,7 @@ class Settings(BaseModel):
     API_PREFIX: str = "/api"
     FRONTEND_ORIGINS: str = os.getenv(
         "FRONTEND_ORIGINS",
-        "http://localhost:5173,http://localhost:3000",
+        "http://localhost:5173,http://localhost:3000,https://tarel-admin.netlify.app,https://tarel-user.netlify.app",
     )
     BACKEND_CORS_ORIGINS: list[str] = [
         origin.strip()
