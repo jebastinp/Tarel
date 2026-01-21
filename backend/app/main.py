@@ -7,10 +7,20 @@ from fastapi.staticfiles import StaticFiles
 from .config import settings
 from .database import Base, engine
 from .routers import admin, auth, categories, getaddress, orders, products, site, support
+from .seed import seed_database
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title=settings.PROJECT_NAME)
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Seed database on startup if empty."""
+    try:
+        seed_database()
+    except Exception as e:
+        print(f"Warning: Could not seed database: {e}")
 
 app.add_middleware(
     CORSMiddleware,
