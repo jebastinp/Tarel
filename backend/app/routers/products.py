@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models import Category, Product
-from ..schemas import ProductCreate, ProductOut
+from ..models import Category, CutCleanOption, Product
+from ..schemas import CutCleanOptionOut, ProductCreate, ProductOut
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -37,3 +37,15 @@ def create_product(payload: ProductCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(prod)
     return prod
+
+
+@router.get("/cut-clean-options", response_model=List[CutCleanOptionOut])
+def get_active_cut_clean_options(db: Session = Depends(get_db)):
+    """Get all active cut & clean options for users."""
+    options = (
+        db.query(CutCleanOption)
+        .filter(CutCleanOption.is_active.is_(True))
+        .order_by(CutCleanOption.sort_order, CutCleanOption.label)
+        .all()
+    )
+    return options

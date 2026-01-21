@@ -3,15 +3,9 @@
 import { useState, useEffect } from 'react'
 import type { Product } from '@/lib/types'
 import { useToast } from '@/providers/ToastProvider'
+import { buildApiUrl } from '@/lib/api'
 
-export type CutCleanOption = 
-  | 'no_cut_clean'
-  | 'cut_clean'
-  | 'thin_slice'
-  | 'clean_only'
-  | 'cut_clean_keep_head'
-  | 'cut_clean_remove_head'
-  | 'fillet_cut_skin'
+export type CutCleanOption = string
 
 export type CartItemWithOptions = {
   qty_kg: number
@@ -20,15 +14,12 @@ export type CartItemWithOptions = {
   custom_note: string
 }
 
-const CUT_CLEAN_OPTIONS: { value: CutCleanOption; label: string }[] = [
-  { value: 'no_cut_clean', label: 'No Cut and Clean' },
-  { value: 'cut_clean', label: 'Cut and Clean' },
-  { value: 'thin_slice', label: 'Thin Slice Cut' },
-  { value: 'clean_only', label: 'Clean Only' },
-  { value: 'cut_clean_keep_head', label: 'Cut & Clean - Keep the Head' },
-  { value: 'cut_clean_remove_head', label: 'Cut & Clean - Head Removed' },
-  { value: 'fillet_cut_skin', label: 'Fillet Cut & Clean with Skin' },
-]
+interface CutCleanOptionType {
+  id: string
+  label: string
+  is_active: boolean
+  sort_order: number
+}
 
 interface AddToCartModalProps {
   product: Product
@@ -45,14 +36,39 @@ export default function AddToCartModal({
 }: AddToCartModalProps) {
   const { showSuccess } = useToast()
   const [quantity, setQuantity] = useState<number>(1)
-  const [cutCleanOption, setCutCleanOption] = useState<CutCleanOption>('no_cut_clean')
+  const [cutCleanOption, setCutCleanOption] = useState<CutCleanOption>('No Cut and Clean')
   const [customNote, setCustomNote] = useState<string>('')
+  const [cutCleanOptions, setCutCleanOptions] = useState<CutCleanOptionType[]>([])
+  const [loadingOptions, setLoadingOptions] = useState(true)
+
+  // Fetch cut & clean options from API
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const response = await fetch(buildApiUrl('/products/cut-clean-options'))
+        if (response.ok) {
+          const data = await response.json()
+          setCutCleanOptions(data)
+          if (data.length > 0) {
+            setCutCleanOption(data[0].label)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch cut & clean options:', error)
+      } finally {
+        setLoadingOptions(false)
+      }
+    }
+    fetchOptions()
+  }, [])
 
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setQuantity(1)
-      setCutCleanOption('no_cut_clean')
+      if (cutCleanOptions.length > 0) {
+        setCutCleanOption(cutCleanOptions[0].label)
+      }
       setCustomNote('')
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden'
@@ -64,7 +80,7 @@ export default function AddToCartModal({
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen])
+  }, [isOpen, cutCleanOptions])
 
   if (!isOpen) return null
 
@@ -161,30 +177,34 @@ export default function AddToCartModal({
             <label className="mb-3 block text-sm font-semibold text-brand-dark">
               Cut & Clean Preference <span className="text-red-500">*</span>
             </label>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {CUT_CLEAN_OPTIONS.map((option) => (
-                <label
-                  key={option.value}
-                  className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${
-                    cutCleanOption === option.value
-                      ? 'border-brand-olive bg-brand-olive/5'
-                      : 'border-gray-200 hover:border-brand-olive/50'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="cutClean"
-                    value={option.value}
-                    checked={cutCleanOption === option.value}
-                    onChange={(e) => setCutCleanOption(e.target.value as CutCleanOption)}
-                    className="h-4 w-4 text-brand-olive focus:ring-brand-olive"
-                  />
-                  <span className="text-sm font-medium text-brand-dark">
-                    {option.label}
-                  </span>
-                </label>
-              ))}
-            </div>
+            {loadingOptions ? (
+              <p className="text-sm text-gray-500">Loading options...</p>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {cutCleanOptions.map((option) => (
+                  <label
+                    key={option.id}
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition ${
+                      cutCleanOption === option.label
+                        ? 'border-brand-olive bg-brand-olive/5'
+                        : 'border-gray-200 hover:border-brand-olive/50'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="cutClean"
+                      value={option.label}
+                      checked={cutCleanOption === option.label}
+                      onChange={(e) => setCutCleanOption(e.target.value)}
+                      className="h-4 w-4 text-brand-olive focus:ring-brand-olive"
+                    />
+                    <span className="text-sm font-medium text-brand-dark">
+                      {option.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Special Instructions */}
