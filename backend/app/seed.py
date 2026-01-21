@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # Sample categories
     # Remove legacy snacks category/product if present
     snacks_category = db.query(Category).filter(Category.slug == "snacks").first()
-if snacks_category:
+    if snacks_category:
         db.query(Product).filter(Product.category_id == snacks_category.id).delete(synchronize_session=False)
         db.delete(snacks_category)
         db.commit()
