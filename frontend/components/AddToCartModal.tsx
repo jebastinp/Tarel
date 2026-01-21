@@ -48,13 +48,48 @@ export default function AddToCartModal({
         const response = await fetch(buildApiUrl('/products/cut-clean-options'))
         if (response.ok) {
           const data = await response.json()
-          setCutCleanOptions(data)
-          if (data.length > 0) {
+          if (data && data.length > 0) {
+            setCutCleanOptions(data)
             setCutCleanOption(data[0].label)
+          } else {
+            // Fallback to default options if API returns empty
+            const defaultOptions = [
+              { id: '1', label: 'No Cut and Clean', is_active: true, sort_order: 1 },
+              { id: '2', label: 'Cut and Clean', is_active: true, sort_order: 2 },
+              { id: '3', label: 'Thin Slice Cut', is_active: true, sort_order: 3 },
+              { id: '4', label: 'Clean Only', is_active: true, sort_order: 4 },
+              { id: '5', label: 'Cut & Clean - Keep the Head', is_active: true, sort_order: 5 },
+              { id: '6', label: 'Cut & Clean - Head Removed', is_active: true, sort_order: 6 },
+            ]
+            setCutCleanOptions(defaultOptions)
+            setCutCleanOption(defaultOptions[0].label)
           }
+        } else {
+          // Fallback if endpoint not available yet
+          const defaultOptions = [
+            { id: '1', label: 'No Cut and Clean', is_active: true, sort_order: 1 },
+            { id: '2', label: 'Cut and Clean', is_active: true, sort_order: 2 },
+            { id: '3', label: 'Thin Slice Cut', is_active: true, sort_order: 3 },
+            { id: '4', label: 'Clean Only', is_active: true, sort_order: 4 },
+            { id: '5', label: 'Cut & Clean - Keep the Head', is_active: true, sort_order: 5 },
+            { id: '6', label: 'Cut & Clean - Head Removed', is_active: true, sort_order: 6 },
+          ]
+          setCutCleanOptions(defaultOptions)
+          setCutCleanOption(defaultOptions[0].label)
         }
       } catch (error) {
         console.error('Failed to fetch cut & clean options:', error)
+        // Fallback to default options
+        const defaultOptions = [
+          { id: '1', label: 'No Cut and Clean', is_active: true, sort_order: 1 },
+          { id: '2', label: 'Cut and Clean', is_active: true, sort_order: 2 },
+          { id: '3', label: 'Thin Slice Cut', is_active: true, sort_order: 3 },
+          { id: '4', label: 'Clean Only', is_active: true, sort_order: 4 },
+          { id: '5', label: 'Cut & Clean - Keep the Head', is_active: true, sort_order: 5 },
+          { id: '6', label: 'Cut & Clean - Head Removed', is_active: true, sort_order: 6 },
+        ]
+        setCutCleanOptions(defaultOptions)
+        setCutCleanOption(defaultOptions[0].label)
       } finally {
         setLoadingOptions(false)
       }
