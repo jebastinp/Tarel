@@ -36,6 +36,12 @@ class Settings(BaseModel):
     MEDIA_URL: str = os.getenv("MEDIA_URL", "/media")
     GETADDRESS_API_KEY: Optional[str] = os.getenv("GETADDRESS_API_KEY")
     GETADDRESS_BASE_URL: str = os.getenv("GETADDRESS_BASE_URL", "https://api.getAddress.io")
+    
+    # Cloudinary settings for image storage
+    CLOUDINARY_CLOUD_NAME: Optional[str] = os.getenv("CLOUDINARY_CLOUD_NAME")
+    CLOUDINARY_API_KEY: Optional[str] = os.getenv("CLOUDINARY_API_KEY")
+    CLOUDINARY_API_SECRET: Optional[str] = os.getenv("CLOUDINARY_API_SECRET")
+    USE_CLOUDINARY: bool = os.getenv("USE_CLOUDINARY", "false").lower() == "true"
 
 
 settings = Settings()

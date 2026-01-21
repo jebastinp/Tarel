@@ -10,6 +10,8 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, Upl
 from math import ceil
 from sqlalchemy import asc, desc, func, or_
 from sqlalchemy.orm import Session, selectinload
+import cloudinary
+import cloudinary.uploader
 
 from ..database import get_db
 from ..deps import require_admin
@@ -116,6 +118,43 @@ def upload_product_image(
 ):
     del admin
     extension = _resolve_image_extension(file.content_type)
+    
+    # Use Cloudinary if configured
+    if settings.USE_CLOUDINARY and settings.CLOUDINARY_CLOUD_NAME:
+        try:
+            # Configure Cloudinary
+            cloudinary.config(
+                cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+                api_key=settings.CLOUDINARY_API_KEY,
+                api_secret=settings.CLOUDINARY_API_SECRET
+            )
+            
+            # Upload to Cloudinary
+            filename = f"{uuid.uuid4().hex}"
+            result = cloudinary.uploader.upload(
+                file.file,
+                folder="tarel/products",
+                public_id=filename,
+                resource_type="image",
+                transformation=[
+                    {"width": 800, "height": 800, "crop": "limit"},
+                    {"quality": "auto:good"}
+                ]
+            )
+            
+            return {
+                "url": result["secure_url"],
+                "path": result["public_id"],
+                "filename": filename,
+                "content_type": file.content_type,
+                "size": result.get("bytes", 0),
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to upload to Cloudinary: {str(e)}")
+        finally:
+            file.file.close()
+    
+    # Fallback to local storage (for development)
     media_dir = _ensure_products_media_dir()
     filename = f"{uuid.uuid4().hex}{extension}"
     destination = media_dir / filename
