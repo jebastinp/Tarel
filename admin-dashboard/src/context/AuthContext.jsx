@@ -40,10 +40,13 @@ export function AuthProvider({ children }) {
       const body = new URLSearchParams({ username: email.trim(), password })
 
       try {
+        console.log('Attempting login to:', import.meta.env.VITE_API_BASE)
         const response = await api('/auth/login', {
           method: 'POST',
           body
         })
+
+        console.log('Login response:', response)
 
         if (!response?.access_token) {
           throw new Error('Authentication failed')
@@ -53,11 +56,12 @@ export function AuthProvider({ children }) {
           throw new Error('Admins only. Contact support for access.')
         }
 
-    persistSession(response.access_token, response.user)
+        persistSession(response.access_token, response.user)
         setToken(response.access_token)
         setUser(response.user)
         return response
       } catch (err) {
+        console.error('Sign in error:', err)
         const message = err instanceof Error ? err.message : 'Unable to sign in'
         setError(message)
         throw err

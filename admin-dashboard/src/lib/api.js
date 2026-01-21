@@ -33,18 +33,29 @@ export async function api(path, { method = 'GET', body, token, headers = {} } = 
     init.headers['Content-Type'] = 'application/json'
   }
 
-  const response = await fetch(joinUrl(API_BASE, path), init)
+  try {
+    const response = await fetch(joinUrl(API_BASE, path), init)
 
-  if (!response.ok) {
-    const message = await response.text()
-    throw new Error(message || response.statusText)
+    if (!response.ok) {
+      let message = response.statusText
+      try {
+        const text = await response.text()
+        message = text || message
+      } catch (e) {
+        // ignore
+      }
+      throw new Error(message)
+    }
+
+    if (response.status === 204) {
+      return null
+    }
+
+    return response.json()
+  } catch (error) {
+    console.error('API Error:', error)
+    throw error
   }
-
-  if (response.status === 204) {
-    return null
-  }
-
-  return response.json()
 }
 
 export function getApiBase() {
