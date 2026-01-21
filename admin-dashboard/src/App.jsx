@@ -11,6 +11,7 @@ import Reports from './pages/Reports'
 import Categories from './pages/Categories'
 import Purchase from './pages/Purchase'
 import VendorReport from './pages/VendorReport'
+import CutCleanOptions from './pages/CutCleanOptions'
 
 export default function App() {
   return (
@@ -49,6 +50,14 @@ export default function App() {
           element={
             <AdminLayout>
               <Categories />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/cut-clean-options"
+          element={
+            <AdminLayout>
+              <CutCleanOptions />
             </AdminLayout>
           }
         />

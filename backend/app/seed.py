@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from .models import (
     Category,
+    CutCleanOption,
     Order,
     OrderItem,
     OrderStatusEnum,
@@ -131,6 +132,20 @@ def seed_database():
                 created_at=datetime.utcnow() - timedelta(days=2),
             )
         )
+
+        # Seed default Cut & Clean options
+        default_options = [
+            {"label": "No Cut and Clean", "sort_order": 1},
+            {"label": "Cut and Clean", "sort_order": 2},
+            {"label": "Thin Slice Cut", "sort_order": 3},
+            {"label": "Clean Only", "sort_order": 4},
+            {"label": "Cut & Clean - Keep the Head", "sort_order": 5},
+            {"label": "Cut & Clean - Head Removed", "sort_order": 6},
+            {"label": "Fillet Cut & Clean with Skin", "sort_order": 7},
+        ]
+        
+        for opt in default_options:
+            db.add(CutCleanOption(label=opt["label"], is_active=True, sort_order=opt["sort_order"]))
 
         db.commit()
         print("Database seeded successfully!")

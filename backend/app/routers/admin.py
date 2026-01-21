@@ -17,6 +17,7 @@ from ..database import get_db
 from ..deps import require_admin
 from ..models import (
     Category,
+    CutCleanOption,
     Order,
     OrderItem,
     Product,
@@ -27,6 +28,9 @@ from ..models import (
 from ..schemas import (
     CategoryCreate,
     CategoryUpdate,
+    CutCleanOptionCreate,
+    CutCleanOptionOut,
+    CutCleanOptionUpdate,
     CustomerDetailOut,
     NextDeliveryResponse,
     NextDeliveryUpdate,
@@ -804,3 +808,69 @@ def get_vendor_report(
         products=products,
         instructions=instructions
     )
+
+
+# ============ CUT & CLEAN OPTIONS ============
+@router.get("/cut-clean-options", response_model=List[CutCleanOptionOut])
+def list_cut_clean_options(db: Session = Depends(get_db), admin=Depends(require_admin)):
+    del admin
+    options = db.query(CutCleanOption).order_by(CutCleanOption.sort_order, CutCleanOption.label).all()
+    return options
+
+
+@router.post("/cut-clean-options", response_model=CutCleanOptionOut, status_code=201)
+def create_cut_clean_option(
+    payload: CutCleanOptionCreate,
+    db: Session = Depends(get_db),
+    admin=Depends(require_admin)
+):
+    del admin
+    option = CutCleanOption(
+        label=payload.label,
+        is_active=payload.is_active,
+        sort_order=payload.sort_order
+    )
+    db.add(option)
+    db.commit()
+    db.refresh(option)
+    return option
+
+
+@router.patch("/cut-clean-options/{option_id}", response_model=CutCleanOptionOut)
+def update_cut_clean_option(
+    option_id: UUID,
+    payload: CutCleanOptionUpdate,
+    db: Session = Depends(get_db),
+    admin=Depends(require_admin)
+):
+    del admin
+    option = db.query(CutCleanOption).filter(CutCleanOption.id == option_id).first()
+    if not option:
+        raise HTTPException(status_code=404, detail="Cut & Clean option not found")
+    
+    if payload.label is not None:
+        option.label = payload.label
+    if payload.is_active is not None:
+        option.is_active = payload.is_active
+    if payload.sort_order is not None:
+        option.sort_order = payload.sort_order
+    
+    db.commit()
+    db.refresh(option)
+    return option
+
+
+@router.delete("/cut-clean-options/{option_id}", status_code=204)
+def delete_cut_clean_option(
+    option_id: UUID,
+    db: Session = Depends(get_db),
+    admin=Depends(require_admin)
+):
+    del admin
+    option = db.query(CutCleanOption).filter(CutCleanOption.id == option_id).first()
+    if not option:
+        raise HTTPException(status_code=404, detail="Cut & Clean option not found")
+    
+    db.delete(option)
+    db.commit()
+    return None

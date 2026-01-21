@@ -386,3 +386,27 @@ class VendorReportOut(BaseModel):
     total_items: int
     products: List[VendorReportProductItem]
     instructions: List[VendorReportInstruction]
+
+
+# Cut & Clean Options Schemas
+class CutCleanOptionCreate(BaseModel):
+    label: str
+    is_active: bool = True
+    sort_order: float = 0
+
+
+class CutCleanOptionUpdate(BaseModel):
+    label: Optional[str] = None
+    is_active: Optional[bool] = None
+    sort_order: Optional[float] = None
+
+
+class CutCleanOptionOut(BaseModel):
+    id: UUID
+    label: str
+    is_active: bool
+    sort_order: float
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

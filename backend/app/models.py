@@ -175,3 +175,13 @@ class SiteSetting(Base):
     value = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+
+class CutCleanOption(Base):
+    __tablename__ = "cut_clean_options"
+
+    id = Column(GUID, primary_key=True, index=True, default=uuid.uuid4)
+    label = Column(String(200), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    sort_order = Column(Float, default=0, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
