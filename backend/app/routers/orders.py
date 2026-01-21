@@ -28,7 +28,7 @@ def create_order(
     payload: OrderCreate, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
     items: list[tuple[Product, float]] = []
-    total = 0.0
+    subtotal = 0.0
     for it in payload.items:
         prod = (
             db.query(Product)
@@ -39,8 +39,20 @@ def create_order(
             raise HTTPException(status_code=400, detail=f"Invalid product {it.product_id}")
         if prod.stock_kg < it.qty_kg:
             raise HTTPException(status_code=400, detail=f"Insufficient stock for {prod.name}")
-        total += it.qty_kg * prod.price_per_kg
+        subtotal += it.qty_kg * prod.price_per_kg
         items.append((prod, it.qty_kg))
+
+    # Add delivery fee: £1 if order is below £20
+    SHIPPING_THRESHOLD = 20.0
+    SHIPPING_FEE = 1.0
+    delivery_fee = 0.0 if subtotal >= SHIPPING_THRESHOLD else SHIPPING_FEE
+    
+    # Add VAT (5%)
+    VAT_RATE = 0.05
+    tax = subtotal * VAT_RATE
+    
+    # Calculate total
+    total = subtotal + delivery_fee + tax
 
     order = Order(
         user_id=user.id,

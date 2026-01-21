@@ -9,8 +9,8 @@ import { useCart } from '@/providers/CartProvider'
 import { useAuth } from '@/providers/AuthProvider'
 
 const currency = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' })
-const SHIPPING_THRESHOLD = 50
-const SHIPPING_FEE = 4.5
+const SHIPPING_THRESHOLD = 20
+const SHIPPING_FEE = 1
 const VAT_RATE = 0.05
 
 const deliverySlots = [
@@ -659,8 +659,8 @@ export default function Checkout() {
                 <dt>Delivery</dt>
                 <dd className="font-semibold">
                   {deliveryFee === 0
-                    ? 'Included (orders over £50)'
-                    : `${currency.format(deliveryFee)} (free over £50)`}
+                    ? 'Free (orders over £20)'
+                    : `${currency.format(deliveryFee)} (free over £20)`}
                 </dd>
               </div>
               <div className="flex items-center justify-between">
