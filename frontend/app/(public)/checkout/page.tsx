@@ -11,7 +11,6 @@ import { useAuth } from '@/providers/AuthProvider'
 const currency = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' })
 const SHIPPING_THRESHOLD = 20
 const SHIPPING_FEE = 1
-const VAT_RATE = 0.05
 
 const deliverySlots = [
   { value: 'Morning', label: 'Morning (8:00 – 11:00)' },
@@ -225,10 +224,9 @@ export default function Checkout() {
     if (!items.length) return 0
     return subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE
   }, [items.length, subtotal])
-  const estimatedTax = useMemo(() => subtotal * VAT_RATE, [subtotal])
   const grandTotal = useMemo(
-    () => subtotal + deliveryFee + estimatedTax,
-    [subtotal, deliveryFee, estimatedTax],
+    () => subtotal + deliveryFee,
+    [subtotal, deliveryFee],
   )
 
   const handleApplyCoupon = () => {
@@ -662,10 +660,6 @@ export default function Checkout() {
                     ? 'Free (orders over £20)'
                     : `${currency.format(deliveryFee)} (free over £20)`}
                 </dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt>Estimated VAT (5%)</dt>
-                <dd className="font-semibold">{currency.format(estimatedTax)}</dd>
               </div>
             </dl>
 

@@ -47,12 +47,8 @@ def create_order(
     SHIPPING_FEE = 1.0
     delivery_fee = 0.0 if subtotal >= SHIPPING_THRESHOLD else SHIPPING_FEE
     
-    # Add VAT (5%)
-    VAT_RATE = 0.05
-    tax = subtotal * VAT_RATE
-    
-    # Calculate total
-    total = subtotal + delivery_fee + tax
+    # Calculate total (no VAT)
+    total = subtotal + delivery_fee
 
     order = Order(
         user_id=user.id,
