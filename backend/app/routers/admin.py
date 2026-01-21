@@ -126,24 +126,25 @@ def upload_product_image(
             cloudinary.config(
                 cloud_name=settings.CLOUDINARY_CLOUD_NAME,
                 api_key=settings.CLOUDINARY_API_KEY,
-                api_secret=settings.CLOUDINARY_API_SECRET
+                api_secret=settings.CLOUDINARY_API_SECRET,
+                secure=True
             )
             
-            # Upload to Cloudinary
+            # Upload to Cloudinary (without transformation during upload)
             filename = f"{uuid.uuid4().hex}"
             result = cloudinary.uploader.upload(
                 file.file,
                 folder="tarel/products",
                 public_id=filename,
-                resource_type="image",
-                transformation=[
-                    {"width": 800, "height": 800, "crop": "limit"},
-                    {"quality": "auto:good"}
-                ]
+                resource_type="image"
             )
             
+            # Build URL with transformation applied on delivery
+            base_url = result["secure_url"]
+            # Cloudinary will optimize on-the-fly when requested
+            
             return {
-                "url": result["secure_url"],
+                "url": base_url,
                 "path": result["public_id"],
                 "filename": filename,
                 "content_type": file.content_type,
